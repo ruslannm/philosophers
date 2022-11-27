@@ -3,7 +3,8 @@ NAME = philo
 CLANG = gcc
 CLANG_FLAGS = -Wall -Wextra -Werror
 
-SRC = ft_main.c ft_fork.c ft_parser.c ft_philosopher.c ft_process.c ft_state.c ft_thread.c ft_time.c
+SRC = ft_main.c ft_fork.c ft_parser.c ft_philosopher.c ft_process.c \
+	ft_state.c ft_thread.c ft_time.c ft_table.c
 OBJ = $(SRC:%.c=%.o)
 DEP = $(OBJ:%.o=%.d)
 

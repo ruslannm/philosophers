@@ -6,32 +6,34 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 14:34:17 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/27 20:49:29 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/27 22:57:32 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+static int	unlock_left_forks(t_philosopher *philosoper)
+{
+	pthread_mutex_unlock(&philosoper->table->take_forks);
+	pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
+	return (1);
+}
+
 static int	take_forks(t_philosopher *philosoper)
 {
 	if (pthread_mutex_lock(&philosoper->table->take_forks) != 0)
 		return (1);
-	if (pthread_mutex_lock(&philosoper->table->forks[philosoper->fork.left]) \
-		!= 0)
+	if (pthread_mutex_lock(&philosoper->table->forks[philosoper->fork.left]))
 		return (1);
 	if (ft_print(philosoper, FORK))
-	{
-		pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
-		return (1);
-	}
-	if (pthread_mutex_lock(&philosoper->table->forks[philosoper->fork.right]) \
-		!= 0)
-	{
-		pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
-		return (1);
-	}
+		return (unlock_left_forks(philosoper));
+	if (philosoper->table->input.number_of_philosophers == 1)
+		return (unlock_left_forks(philosoper));
+	if (pthread_mutex_lock(&philosoper->table->forks[philosoper->fork.right]))
+		return (unlock_left_forks(philosoper));
 	if (ft_print(philosoper, FORK))
 	{
+		pthread_mutex_unlock(&philosoper->table->take_forks);
 		pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
 		pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.right]);
 		return (1);

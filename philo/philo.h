@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 22:38:54 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/27 21:01:44 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/27 21:08:54 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,9 @@ typedef struct s_table
 }					t_table;
 
 int					parse(int argc, char **argv, t_table *table);
+int					init_table(t_table *table);
+void				destroy_table(t_table *table);
+
 int					create_philosophers(t_table *table);
 int					create_forks(t_table *table);
 int					ft_print(t_philosopher *philosopher, char *state);
@@ -91,6 +94,5 @@ int					action(t_philosopher *philosopher, char *state, int time);
 void				*process(void *args);
 void				*checker(void *args);
 int					create_threads(t_table *table);
-void				destroy_mutexes(t_table *table);
 
 #endif
