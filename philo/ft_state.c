@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 14:34:17 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/26 17:39:24 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/27 20:49:29 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,30 @@
 
 static int	take_forks(t_philosopher *philosoper)
 {
-    if (pthread_mutex_lock(&philosoper->table->forks[philosoper->fork.left]) != 0)
+	if (pthread_mutex_lock(&philosoper->table->take_forks) != 0)
 		return (1);
-	if (ft_print(philosoper, FORK)){
-        pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
-    	return (1);
-    }
-	if (pthread_mutex_lock(&philosoper->table->forks[philosoper->fork.right]) != 0){
-        pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
+	if (pthread_mutex_lock(&philosoper->table->forks[philosoper->fork.left]) \
+		!= 0)
 		return (1);
-    }
-	if (ft_print(philosoper, FORK)){
-        pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
-        pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.right]);
+	if (ft_print(philosoper, FORK))
+	{
+		pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
 		return (1);
-    }
-    return (0);
+	}
+	if (pthread_mutex_lock(&philosoper->table->forks[philosoper->fork.right]) \
+		!= 0)
+	{
+		pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
+		return (1);
+	}
+	if (ft_print(philosoper, FORK))
+	{
+		pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.left]);
+		pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.right]);
+		return (1);
+	}
+	pthread_mutex_unlock(&philosoper->table->take_forks);
+	return (0);
 }
 
 static int	drop_forks(t_philosopher *philosoper)
@@ -39,6 +47,11 @@ static int	drop_forks(t_philosopher *philosoper)
 	if (pthread_mutex_unlock(&philosoper->table->forks[philosoper->fork.right]))
 		return (1);
 	++philosoper->number_of_times_ate;
+	if (philosoper->number_of_times_ate == \
+		philosoper->table->input.number_of_times_each_philosopher_must_eat)
+	{
+		++philosoper->table->number_of_philosophers_ate;
+	}
 	return (0);
 }
 
@@ -46,7 +59,8 @@ int	eat(t_philosopher *philosopher, char *state, int time)
 {
 	if (take_forks(philosopher))
 		return (1);
-    if (action(philosopher, state, time))
+	philosopher->last_meal_time = get_time();
+	if (action(philosopher, state, time))
 		return (1);
 	if (drop_forks(philosopher))
 		return (1);
@@ -60,7 +74,3 @@ int	action(t_philosopher *philosopher, char *state, int time)
 	execute_action(time);
 	return (0);
 }
-
-
-
-
