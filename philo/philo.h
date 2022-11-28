@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 22:38:54 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/27 21:08:54 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/28 21:35:58 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ typedef struct s_input
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int				time_to_think;
 	int				number_of_times_each_philosopher_must_eat;
 }					t_input;
 
@@ -67,13 +66,12 @@ typedef struct s_table
 {
 	t_input			input;
 	long long		start_time;
-	int				philosopher_dead;
+	int				simulation_stop;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	take_forks;
 	pthread_mutex_t	writer;
 	t_philosopher	*philosophers;
 	pthread_t		checker;
-	int				number_of_philosophers_ate;
 }					t_table;
 
 int					parse(int argc, char **argv, t_table *table);
@@ -82,17 +80,23 @@ void				destroy_table(t_table *table);
 
 int					create_philosophers(t_table *table);
 int					create_forks(t_table *table);
-int					ft_print(t_philosopher *philosopher, char *state);
+int					ft_print(t_philosopher *philosopher, t_table *table, \
+					char *state);
 
 long long			get_time(void);
 long long			get_delta_time(long long time);
 void				execute_action(long long time);
 
-int					eat(t_philosopher *philosopher, char *state, int time);
-int					action(t_philosopher *philosopher, char *state, int time);
+int					eat(t_philosopher *philosopher, t_table *table, \
+					char *state, int time);
+int					action(t_philosopher *philosopher, t_table *table, \
+					char *state, int time);
 
 void				*process(void *args);
 void				*checker(void *args);
 int					create_threads(t_table *table);
+int					process_execute(t_philosopher *philosopher, t_table *table);
+int					is_dead(t_table *table);
+int					is_simulation_stop(t_table *table);
 
 #endif

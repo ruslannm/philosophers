@@ -6,54 +6,24 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 12:22:42 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/27 22:51:11 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/28 21:41:11 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	process_execute(t_philosopher *philosopher)
+int	process_execute(t_philosopher *philosopher, t_table *table)
 {
-	if (eat(philosopher, EAT, philosopher->table->input.time_to_eat))
+	if (eat(philosopher, table, EAT, table->input.time_to_eat))
 		return (1);
-	if (philosopher->table->input.number_of_times_each_philosopher_must_eat \
-		!= philosopher->number_of_times_ate)
-	{
-		if (action(philosopher, SLEEP, philosopher->table->input.time_to_sleep))
-			return (1);
-		if (action(philosopher, THINK, 0))
-			return (1);
-	}
+	if (action(philosopher, table, SLEEP, table->input.time_to_sleep))
+		return (1);
+	if (action(philosopher, table, THINK, 0))
+		return (1);
 	return (0);
 }
 
-void	*process(void *args)
-{
-	t_philosopher	*philosopher;
-	t_table			*table;
-
-	philosopher = (t_philosopher *)args;
-	table = philosopher->table;
-	if (table->input.number_of_times_each_philosopher_must_eat > 0)
-	{
-		while (table->input.number_of_times_each_philosopher_must_eat \
-			> philosopher->number_of_times_ate
-			&& table->philosopher_dead == 0)
-			if (process_execute(philosopher))
-				break ;
-	}
-	else
-	{
-		while (table->philosopher_dead == 0)
-		{
-			if (process_execute(philosopher))
-				break ;
-		}
-	}
-	return (NULL);
-}
-
-static int	is_dead(t_table *table)
+int	is_dead(t_table *table)
 {
 	long long	time;
 	int			i;
@@ -64,8 +34,8 @@ static int	is_dead(t_table *table)
 		time = get_delta_time(table->philosophers[i].last_meal_time);
 		if (time > table->input.time_to_die)
 		{
-			table->philosopher_dead = 1;
-			ft_print(&table->philosophers[i], DIED);
+			ft_print(&table->philosophers[i], table, DIED);
+			table->simulation_stop = 1;
 			return (1);
 		}
 		++i;
@@ -73,49 +43,37 @@ static int	is_dead(t_table *table)
 	return (0);
 }
 
-void	*checker(void *args)
+int	is_simulation_stop(t_table *table)
 {
-	t_table	*table;
-	int		i;
+	int			i;
+	int			number_of_philosophers_ate;
 
-	table = (t_table *)args;
 	i = 0;
-	if (table->input.number_of_times_each_philosopher_must_eat > 0)
+	number_of_philosophers_ate = 0;
+	while (i < table->input.number_of_philosophers)
 	{
-		while (table->number_of_philosophers_ate < \
-			table->input.number_of_philosophers)
-			if (is_dead(table))
-				break ;
+		if (table->philosophers[i].number_of_times_ate \
+			>= table->input.number_of_times_each_philosopher_must_eat)
+			++number_of_philosophers_ate;
+		++i;
 	}
-	else
+	if (number_of_philosophers_ate == table->input.number_of_philosophers)
 	{
-		while (1)
-			if (is_dead(table))
-				break ;
+		table->simulation_stop = 1;
+		return (1);
 	}
-	return (NULL);
+	return (0);
 }
 
-int	ft_print(t_philosopher *philosopher, char *state)
+int	ft_print(t_philosopher *philosopher, t_table *table, char *state)
 {
 	long long	delta_time;
 
-	delta_time = get_delta_time(philosopher->table->start_time);
-	pthread_mutex_lock(&philosopher->table->writer);
-	if (philosopher->table->philosopher_dead)
-	{
-		if (philosopher->table->philosopher_dead == 1)
-		{
-			printf("%-10lld %-3d %-30s\n", delta_time, philosopher->id, state);
-			philosopher->table->philosopher_dead = 2;
-		}	
-		pthread_mutex_unlock(&philosopher->table->writer);
+	if (table->simulation_stop)
 		return (1);
-	}
-	else
-	{
-		printf("%-10lld %-3d %-30s\n", delta_time, philosopher->id, state);
-	}
-	pthread_mutex_unlock(&philosopher->table->writer);
+	delta_time = get_delta_time(table->start_time);
+	pthread_mutex_lock(&table->writer);
+	printf("%-10lld %-3d %-30s\n", delta_time, philosopher->id, state);
+	pthread_mutex_unlock(&table->writer);
 	return (0);
 }

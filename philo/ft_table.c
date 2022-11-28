@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/27 21:07:19 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/27 22:49:08 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/28 21:29:07 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,12 @@
 
 int	init_table(t_table *table)
 {
-	table->philosopher_dead = 0;
-	table->number_of_philosophers_ate = 0;
+	table->simulation_stop = 0;
 	table->start_time = get_time();
 	if (create_philosophers(table))
-	{
-		free(table);
 		return (1);
-	}
 	if (create_forks(table))
 	{
-		free(table);
 		free(table->philosophers);
 		return (1);
 	}
@@ -49,5 +44,4 @@ void	destroy_table(t_table *table)
 	pthread_mutex_destroy(&table->writer);
 	free(table->philosophers);
 	free(table->forks);
-	free(table);
 }
