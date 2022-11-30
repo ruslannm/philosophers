@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 14:34:17 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 12:05:11 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 16:57:00 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,24 @@
 
 static int	take_forks(t_philosopher *philosopher, t_table *table)
 {
-	if (sem_wait(&table->forks))
+	if (sem_wait(table->forks))
 		return (1);
 	if (ft_print(philosopher, table, FORK))
-		return (sem_post(&table->forks));
+		return (sem_post(table->forks));
 	if (table->input.number_of_philosophers == 1)
-		return (sem_post(&table->forks));
-	if (sem_wait(&table->forks))
+		return (sem_post(table->forks));
+	if (sem_wait(table->forks))
 		return (1);
 	if (ft_print(philosopher, table, FORK))
-		return (sem_post(&table->forks));
+		return (sem_post(table->forks));
 	return (0);
 }
 
-static int	drop_forks(t_philosopher *philosopher, t_table *table)
+static int	drop_forks(t_table *table)
 {
-	if (sem_post(&table->forks))
+	if (sem_post(table->forks))
 		return (1);
-	if (sem_post(&table->forks))
+	if (sem_post(table->forks))
 		return (1);
 	return (0);
 }
@@ -48,10 +48,10 @@ int	eat(t_philosopher *philosopher, t_table *table, char *state, int time)
 		sem_post(table->enough_eaten);
 	if (action(philosopher, table, state, time))
 	{
-		drop_forks(philosopher, table);
+		drop_forks(table);
 		return (1);
 	}
-	if (drop_forks(philosopher, table))
+	if (drop_forks(table))
 		return (1);
 	return (0);
 }
@@ -60,6 +60,6 @@ int	action(t_philosopher *philosopher, t_table *table, char *state, int time)
 {
 	if (ft_print(philosopher, table, state))
 		return (1);
-	execute_action(time);
+	usleep(time * 1000);
 	return (0);
 }

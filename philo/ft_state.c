@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 14:34:17 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 11:20:10 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 16:41:03 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,14 @@
 static int	unlock_first_fork(t_table *table, int first_fork)
 {
 	pthread_mutex_unlock(&table->forks[first_fork]);
+	pthread_mutex_unlock(&table->take_forks);
 	return (1);
 }
 
 static int	take_forks(t_philosopher *philosopher, t_table *table)
 {
+	if (pthread_mutex_lock(&table->take_forks))
+		return (1);
 	if (pthread_mutex_lock(&table->forks[philosopher->fork.left]))
 		return (1);
 	if (ft_print(philosopher, table, FORK))
@@ -32,8 +35,10 @@ static int	take_forks(t_philosopher *philosopher, t_table *table)
 	{
 		pthread_mutex_unlock(&table->forks[philosopher->fork.right]);
 		pthread_mutex_unlock(&table->forks[philosopher->fork.left]);
+		pthread_mutex_unlock(&table->take_forks);
 		return (1);
 	}
+	pthread_mutex_unlock(&table->take_forks);
 	return (0);
 }
 
@@ -69,13 +74,8 @@ int	eat(t_philosopher *philosopher, t_table *table, char *state, int time)
 
 int	action(t_philosopher *philosopher, t_table *table, char *state, int time)
 {
-	if (table->simulation_stop == 0 && ft_print(philosopher, table, state))
+	if (ft_print(philosopher, table, state))
 		return (1);
-	if (table->simulation_stop)
-	{
-		philosopher->simulation_stop = 1;
-		return (1);
-	}
-	execute_action(time, table);
+	usleep(time * 1000);
 	return (0);
 }

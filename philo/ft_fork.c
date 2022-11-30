@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/25 17:27:48 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 10:55:50 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 12:22:50 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,11 @@ int	create_forks(t_table *table)
 		}
 		++i;
 	}
+	if (pthread_mutex_init(&table->take_forks, NULL) != 0)
+	{
+		free(table->forks);
+		return (1);
+	}
+		++i;
 	return (0);
 }

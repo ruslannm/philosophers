@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 22:29:33 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/29 21:23:16 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 16:56:04 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	main(int argc, char **argv)
 		destroy_table(&table);
 		return (1);
 	}
-	checker(&table);
+	// checker(&table);
 	destroy_table(&table);
 	return (0);
 }

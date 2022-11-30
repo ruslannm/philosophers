@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 22:38:54 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 11:18:50 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 16:47:32 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ typedef struct s_table
 	int				simulation_stop;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	writer;
+	pthread_mutex_t	take_forks;
 	t_philosopher	*philosophers;
 	pthread_t		checker;
 }					t_table;
@@ -85,7 +86,6 @@ int					ft_print(t_philosopher *philosopher, t_table *table, \
 
 long long			get_time(void);
 long long			get_delta_time(long long time);
-void				execute_action(long long time, t_table *table);
 
 int					eat(t_philosopher *philosopher, t_table *table, \
 					char *state, int time);

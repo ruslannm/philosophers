@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 12:22:42 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 12:06:26 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 16:51:30 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ int	ft_print(t_philosopher *philosopher, t_table *table, char *state)
 	if (table->simulation_stop)
 		return (0);
 	delta_time = get_delta_time(table->start_time);
-	sem_wait(&table->writer);
+	sem_wait(table->writer);
 	printf("%-10lld %-3d %-30s\n", delta_time, philosopher->id, state);
-	sem_post(&table->writer);
+	sem_post(table->writer);
 	return (0);
 }

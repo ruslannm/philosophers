@@ -6,19 +6,14 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 16:32:59 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 11:56:25 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 16:40:23 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	create_threads(t_table *table)
+static int	create_part_threads(t_table *table, int i)
 {
-	int	i;
-
-	if (pthread_create(&(table->checker), NULL, &checker, (void *) table))
-		return (1);
-	i = 0;
 	while (i < table->input.number_of_philosophers)
 	{
 		if (pthread_create(&(table->philosophers[i].thread_id),
@@ -28,8 +23,23 @@ int	create_threads(t_table *table)
 			return (1);
 		}
 		pthread_detach(table->philosophers[i].thread_id);
-		++i;
+		usleep(10);
+		i += 2;
 	}
+	return (0);
+}
+
+int	create_threads(t_table *table)
+{
+	int	i;
+
+	if (pthread_create(&(table->checker), NULL, &checker, (void *) table))
+		return (1);
+	i = 0;
+	if (create_part_threads(table, 0))
+		return (1);
+	if (create_part_threads(table, 1))
+		return (1);
 	return (0);
 }
 
@@ -69,8 +79,10 @@ void	*checker(void *args)
 	else
 	{
 		while (table->simulation_stop == 0)
+		{
 			if (is_dead(table))
 				break ;
+		}
 	}
 	return (NULL);
 }

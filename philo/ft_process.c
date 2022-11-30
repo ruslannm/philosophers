@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 12:22:42 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 11:19:21 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 16:40:05 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,11 @@
 
 int	process_execute(t_philosopher *philosopher, t_table *table)
 {
-	if (table->simulation_stop)
-	{
-		philosopher->simulation_stop = 1;
-		return (1);
-	}
 	if (eat(philosopher, table, EAT, table->input.time_to_eat))
 		return (1);
-	if (table->simulation_stop)
-	{
-		philosopher->simulation_stop = 1;
-		return (1);
-	}
 	if (action(philosopher, table, SLEEP, table->input.time_to_sleep))
 		return (1);
-	if (table->simulation_stop)
-	{
-		philosopher->simulation_stop = 1;
-		return (1);
-	}
-	if (action(philosopher, table, THINK, 0))
-		return (1);
+	action(philosopher, table, THINK, 0);
 	return (0);
 }
 
@@ -85,7 +69,7 @@ int	ft_print(t_philosopher *philosopher, t_table *table, char *state)
 {
 	long long	delta_time;
 
-	if (table->simulation_stop)
+	if (philosopher->simulation_stop)
 		return (0);
 	delta_time = get_delta_time(table->start_time);
 	pthread_mutex_lock(&table->writer);

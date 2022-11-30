@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 22:38:54 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/29 22:23:58 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 16:54:14 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <semaphore.h>
+# include <signal.h>
 
 # define INT_MAX 2147483647
 # define LENGTH_INT_MAX	10
@@ -89,6 +90,7 @@ int					action(t_philosopher *philosopher, t_table *table, \
 
 void				process(t_philosopher *philosopher, t_table *table);
 void				checker(t_table *table);
+void				*checker_eaten(void *args);
 int					create_threads(t_table *table);
 int					process_execute(t_philosopher *philosopher, t_table *table);
 int					is_dead(t_table *table);
