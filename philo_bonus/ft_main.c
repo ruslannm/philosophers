@@ -1,34 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_fork.c                                          :+:      :+:    :+:   */
+/*   ft_main.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/25 17:27:48 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 10:55:50 by rgero            ###   ########.fr       */
+/*   Created: 2022/11/12 22:29:33 by rgero             #+#    #+#             */
+/*   Updated: 2022/11/29 21:23:16 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	create_forks(t_table *table)
+int	main(int argc, char **argv)
 {
-	int	i;
+	t_table	table;
 
-	table->forks = malloc(sizeof(pthread_mutex_t) \
-		* table->input.number_of_philosophers);
-	if (table->forks == NULL)
-		return (1);
-	i = 0;
-	while (i < table->input.number_of_philosophers)
+	if (parse(argc, argv, &table))
 	{
-		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
-		{
-			free(table->forks);
-			return (1);
-		}
-		++i;
+		printf(USAGE);
+		return (1);
 	}
+	if (init_table(&table))
+		return (1);
+	if (create_threads(&table))
+	{
+		destroy_table(&table);
+		return (1);
+	}
+	checker(&table);
+	destroy_table(&table);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 16:32:59 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 11:56:25 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/29 22:29:02 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,61 +16,49 @@ int	create_threads(t_table *table)
 {
 	int	i;
 
-	if (pthread_create(&(table->checker), NULL, &checker, (void *) table))
-		return (1);
 	i = 0;
 	while (i < table->input.number_of_philosophers)
 	{
-		if (pthread_create(&(table->philosophers[i].thread_id),
-				NULL, &process, (void *) &table->philosophers[i]))
+		table->philosophers[i].proccess_id = fork();
+		if (table->philosophers[i].proccess_id < 0)
 		{
-			table->simulation_stop = 1;
+			while (--i >= 0)
+				kill(table->philosophers[i].proccess_id, SIGKILL);
 			return (1);
 		}
-		pthread_detach(table->philosophers[i].thread_id);
+		if (table->philosophers[i].proccess_id == 0)
+			process(&table->philosophers[i], table);
 		++i;
+	}
+	if (table->input.number_of_times_each_philosopher_must_eat > 0)
+	{
+		if (pthread_create(&(table->checker_eaten), NULL, &checker_eaten, \
+			(void *) table))
+			return (1);
+		if (pthread_detach(table->checker_eaten) != 0)
+			return (1);		
 	}
 	return (0);
 }
 
-void	*process(void *args)
+void	process(t_philosopher *philosopher, t_table	*table)
 {
-	t_philosopher	*philosopher;
-	t_table			*table;
-
-	philosopher = (t_philosopher *)args;
-	table = philosopher->table;
 	while (1)
 	{
-		if (table->simulation_stop)
-		{
-			philosopher->simulation_stop = 1;
-			break ;
-		}
-		if (process_execute(philosopher, table))
+		if (process_execute(philosopher, table) || table->simulation_stop)
 			break ;
 	}
-	return (NULL);
 }
 
-void	*checker(void *args)
+void	*checker_eaten(void *args)
 {
 	t_table	*table;
+	int		i;
 
 	table = (t_table *)args;
-	if (table->input.number_of_times_each_philosopher_must_eat > 0)
-	{
-		while (table->simulation_stop == 0)
-		{
-			if (is_dead(table) || is_simulation_stop(table))
-				break ;
-		}
-	}
-	else
-	{
-		while (table->simulation_stop == 0)
-			if (is_dead(table))
-				break ;
-	}
+	i = -1;
+	while (++i < table->input.number_of_philosophers)
+		sem_wait(table->enough_eaten);
+	sem_post(table->dead);
 	return (NULL);
 }

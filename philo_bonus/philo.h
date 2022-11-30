@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 22:38:54 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 11:18:50 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/29 22:23:58 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <unistd.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <semaphore.h>
 
 # define INT_MAX 2147483647
 # define LENGTH_INT_MAX	10
@@ -46,21 +47,13 @@ typedef struct s_input
 	int				number_of_times_each_philosopher_must_eat;
 }					t_input;
 
-typedef struct s_fork
-{
-	int				left;
-	int				right;
-}					t_fork;
-
 typedef struct s_philosopher
 {
 	int				id;
 	long long		last_meal_time;
 	t_table			*table;
-	t_fork			fork;
-	pthread_t		thread_id;
+	pid_t			proccess_id;
 	int				number_of_times_ate;
-	int				simulation_stop;
 }					t_philosopher;
 
 typedef struct s_table
@@ -68,10 +61,12 @@ typedef struct s_table
 	t_input			input;
 	long long		start_time;
 	int				simulation_stop;
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	writer;
+	sem_t			*forks;
+	sem_t			*writer;
+	sem_t			*enough_eaten;
+	sem_t			*dead;
+	pthread_t		checker_eaten;
 	t_philosopher	*philosophers;
-	pthread_t		checker;
 }					t_table;
 
 int					parse(int argc, char **argv, t_table *table);
@@ -85,18 +80,17 @@ int					ft_print(t_philosopher *philosopher, t_table *table, \
 
 long long			get_time(void);
 long long			get_delta_time(long long time);
-void				execute_action(long long time, t_table *table);
+void				execute_action(long long time);
 
 int					eat(t_philosopher *philosopher, t_table *table, \
 					char *state, int time);
 int					action(t_philosopher *philosopher, t_table *table, \
 					char *state, int time);
 
-void				*process(void *args);
-void				*checker(void *args);
+void				process(t_philosopher *philosopher, t_table *table);
+void				checker(t_table *table);
 int					create_threads(t_table *table);
-int					process_execute(t_philosopher *philosopher, \
-					t_table *table);
+int					process_execute(t_philosopher *philosopher, t_table *table);
 int					is_dead(t_table *table);
 int					is_simulation_stop(t_table *table);
 
