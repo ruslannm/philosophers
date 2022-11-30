@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/27 21:07:19 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 16:54:51 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 19:16:33 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,25 @@ int	init_table(t_table *table)
 	return (0);
 }
 
+static int	kill_threads(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	while (i < table->input.number_of_philosophers)
+	{
+		kill(table->philosophers[i].proccess_id, SIGKILL);
+		++i;
+	}
+	return (0);
+}
+
 void	destroy_table(t_table *table)
 {
-	sem_close(table->writer);
+	kill_threads(table);
 	sem_close(table->forks);
+	sem_close(table->writer);
+	sem_close(table->enough_eaten);
+	sem_close(table->dead);
 	free(table->philosophers);
 }

@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 22:38:54 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 16:54:14 by rgero            ###   ########.fr       */
+/*   Updated: 2022/11/30 19:21:42 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <sys/time.h>
 # include <semaphore.h>
 # include <signal.h>
+# include <fcntl.h> 
+# include <sys/stat.h> 
 
 # define INT_MAX 2147483647
 # define LENGTH_INT_MAX	10
@@ -55,6 +57,7 @@ typedef struct s_philosopher
 	t_table			*table;
 	pid_t			proccess_id;
 	int				number_of_times_ate;
+	pthread_t		checker_dead;
 }					t_philosopher;
 
 typedef struct s_table
@@ -81,19 +84,16 @@ int					ft_print(t_philosopher *philosopher, t_table *table, \
 
 long long			get_time(void);
 long long			get_delta_time(long long time);
-void				execute_action(long long time);
 
 int					eat(t_philosopher *philosopher, t_table *table, \
 					char *state, int time);
 int					action(t_philosopher *philosopher, t_table *table, \
 					char *state, int time);
 
-void				process(t_philosopher *philosopher, t_table *table);
-void				checker(t_table *table);
+void				*process(void *args);
 void				*checker_eaten(void *args);
+void				*checker_dead(void *args);
 int					create_threads(t_table *table);
 int					process_execute(t_philosopher *philosopher, t_table *table);
-int					is_dead(t_table *table);
-int					is_simulation_stop(t_table *table);
 
 #endif
