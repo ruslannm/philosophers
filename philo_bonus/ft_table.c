@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/27 21:07:19 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 19:16:33 by rgero            ###   ########.fr       */
+/*   Updated: 2022/12/01 10:42:29 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 
 int	init_table(t_table *table)
 {
+	if (table->input.number_of_philosophers % 2)
+		table->time_to_think = 10;
+	else
+		table->time_to_think = 0;
 	table->simulation_stop = 0;
 	table->start_time = get_time();
 	if (create_philosophers(table))

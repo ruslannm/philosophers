@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 22:38:54 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 19:21:42 by rgero            ###   ########.fr       */
+/*   Updated: 2022/12/01 10:49:00 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ typedef struct s_table
 {
 	t_input			input;
 	long long		start_time;
+	int				time_to_think;
 	int				simulation_stop;
 	sem_t			*forks;
 	sem_t			*writer;
@@ -79,7 +80,7 @@ void				destroy_table(t_table *table);
 
 int					create_philosophers(t_table *table);
 int					create_forks(t_table *table);
-int					ft_print(t_philosopher *philosopher, t_table *table, \
+void				ft_print(t_philosopher *philosopher, t_table *table, \
 					char *state);
 
 long long			get_time(void);

@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/25 17:10:46 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 19:21:27 by rgero            ###   ########.fr       */
+/*   Updated: 2022/12/01 10:45:24 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	create_philosophers(t_table *table)
 {
 	int	i;
 
-	table->philosophers = malloc(sizeof(t_philosopher) * \
+	table->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher) * \
 		(table->input.number_of_philosophers));
 	if (table->philosophers == NULL)
 		return (1);

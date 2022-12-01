@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/25 17:27:48 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 12:22:50 by rgero            ###   ########.fr       */
+/*   Updated: 2022/12/01 10:14:56 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	create_forks(t_table *table)
 {
 	int	i;
 
-	table->forks = malloc(sizeof(pthread_mutex_t) \
+	table->forks = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t) \
 		* table->input.number_of_philosophers);
 	if (table->forks == NULL)
 		return (1);
@@ -35,6 +35,5 @@ int	create_forks(t_table *table)
 		free(table->forks);
 		return (1);
 	}
-		++i;
 	return (0);
 }

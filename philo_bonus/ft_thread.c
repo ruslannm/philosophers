@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 16:32:59 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 20:38:54 by rgero            ###   ########.fr       */
+/*   Updated: 2022/12/01 10:54:27 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,8 @@ void	*checker_dead(void *args)
 		if (time > philosopher->table->input.time_to_die)
 		{
 			ft_print(philosopher, philosopher->table, DIED);
-			sem_post(philosopher->table->dead);
 			sem_wait(philosopher->table->writer);
+			sem_post(philosopher->table->dead);
 			philosopher->table->simulation_stop = 1;
 			while (1)
 				if (sem_post(philosopher->table->enough_eaten))

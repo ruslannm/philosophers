@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 10:19:53 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 16:40:37 by rgero            ###   ########.fr       */
+/*   Updated: 2022/12/01 08:55:14 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,5 @@ long long	get_time(void)
 
 long long	get_delta_time(long long time)
 {
-	if (time > 0)
-		return (get_time() - time);
-	return (0);
+	return (get_time() - time);
 }

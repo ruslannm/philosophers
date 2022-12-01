@@ -6,7 +6,7 @@
 /*   By: rgero <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 16:32:59 by rgero             #+#    #+#             */
-/*   Updated: 2022/11/30 16:40:23 by rgero            ###   ########.fr       */
+/*   Updated: 2022/12/01 10:27:07 by rgero            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,9 @@ static int	create_part_threads(t_table *table, int i)
 	{
 		if (pthread_create(&(table->philosophers[i].thread_id),
 				NULL, &process, (void *) &table->philosophers[i]))
-		{
-			table->simulation_stop = 1;
 			return (1);
-		}
 		pthread_detach(table->philosophers[i].thread_id);
-		usleep(10);
+		usleep(50);
 		i += 2;
 	}
 	return (0);
@@ -40,6 +37,7 @@ int	create_threads(t_table *table)
 		return (1);
 	if (create_part_threads(table, 1))
 		return (1);
+	pthread_join(table->checker, NULL);
 	return (0);
 }
 
@@ -52,11 +50,6 @@ void	*process(void *args)
 	table = philosopher->table;
 	while (1)
 	{
-		if (table->simulation_stop)
-		{
-			philosopher->simulation_stop = 1;
-			break ;
-		}
 		if (process_execute(philosopher, table))
 			break ;
 	}
@@ -68,21 +61,25 @@ void	*checker(void *args)
 	t_table	*table;
 
 	table = (t_table *)args;
+	usleep((table->input.time_to_die - 5) * 1000);
 	if (table->input.number_of_times_each_philosopher_must_eat > 0)
 	{
-		while (table->simulation_stop == 0)
+		while (1)
 		{
 			if (is_dead(table) || is_simulation_stop(table))
 				break ;
+			usleep(5000);
 		}
 	}
 	else
 	{
-		while (table->simulation_stop == 0)
+		while (1)
 		{
 			if (is_dead(table))
 				break ;
+			usleep(5000);
 		}
 	}
+	pthread_mutex_lock(&table->writer);
 	return (NULL);
 }
